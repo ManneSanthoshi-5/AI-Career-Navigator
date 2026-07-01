@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Job Match Agent</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.page{
+
+width:900px;
+margin:40px auto;
+
+}
+
+.back{
+
+text-decoration:none;
+color:#fc1a2d;
+font-weight:bold;
+
+}
+
+.card{
+
+background:white;
+padding:30px;
+margin-top:20px;
+border-radius:15px;
+box-shadow:0 5px 20px rgba(0,0,0,.1);
+
+}
+
+textarea{
+
+width:100%;
+padding:15px;
+border-radius:10px;
+border:1px solid #ccc;
+resize:none;
+font-size:15px;
+
+}
+
+button{
+
+width:100%;
+margin-top:20px;
+padding:15px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+
+}
+
+button:hover{
+
+background:#1d4ed8;
+
+}
+
+.output{
+
+margin-top:20px;
+background:#f8fafc;
+padding:20px;
+border-radius:10px;
+border:1px solid #ddd;
+min-height:250px;
+white-space:pre-wrap;
+
+}
+
+.loading{
+
+color:#2563eb;
+font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+<a href="index.html" class="back">
+
+← Back to Dashboard
+
+</a>
+
+<div class="card">
+
+<h1>💼 Job Match Agent</h1>
+
+<p>
+
+Paste the Job Description below.
+
+</p>
+
+<textarea
+
+id="job"
+
+rows="12"
+
+placeholder="Paste Job Description Here">
+
+</textarea>
+
+<button onclick="matchJob()">
+
+Analyze Match
+
+</button>
+
+<div id="output" class="output">
+
+Job Match Report will appear here.
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+async function matchJob(){
+
+let resume=localStorage.getItem("resume");
+
+if(resume==null){
+
+alert("Please upload your resume first.");
+
+window.location="resume.html";
+
+return;
+
+}
+
+let job=document.getElementById("job").value;
+
+if(job.trim()==""){
+
+alert("Paste Job Description.");
+
+return;
+
+}
+
+let output=document.getElementById("output");
+
+output.innerHTML="<div class='loading'>Analyzing Resume Match...</div>";
+
+try{
+
+let response=await fetch(
+
+"http://127.0.0.1:5000/match",
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+resume:resume,
+
+job:job
+
+})
+
+}
+
+);
+
+let data=await response.json();
+
+output.innerText=data.match;
+
+}
+
+catch(error){
+
+console.log(error);
+
+output.innerHTML="❌ Backend Connection Failed.";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

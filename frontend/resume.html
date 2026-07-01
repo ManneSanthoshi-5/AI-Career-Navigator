@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Resume Analyzer</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.page{
+
+width:900px;
+margin:40px auto;
+
+}
+
+.back{
+
+text-decoration:none;
+color:#ea1919;
+font-weight:bold;
+
+}
+
+.card{
+
+background:white;
+padding:30px;
+margin-top:20px;
+border-radius:15px;
+box-shadow:0px 5px 20px rgba(0,0,0,.1);
+
+}
+
+input[type=file]{
+
+margin-top:20px;
+margin-bottom:20px;
+
+}
+
+button{
+
+width:100%;
+padding:15px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:8px;
+font-size:17px;
+cursor:pointer;
+
+}
+
+button:hover{
+
+background:#1d4ed8;
+
+}
+
+.output{
+
+margin-top:20px;
+background:#f8fafc;
+padding:20px;
+border-radius:10px;
+min-height:250px;
+white-space:pre-wrap;
+border:1px solid #ddd;
+
+}
+
+.loading{
+
+color:#2563eb;
+font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+<a href="index.html" class="back">
+← Back to Dashboard
+</a>
+
+<div class="card">
+
+<h1>📄 Resume Analyzer</h1>
+
+<p>
+Upload your resume (PDF or DOCX) to get an AI-powered analysis.
+</p>
+
+<input type="file" id="resume">
+
+<button onclick="uploadResume()">
+Analyze Resume
+</button>
+
+<div id="output" class="output">
+
+Resume analysis will appear here.
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let uploadedResumeText="";
+
+async function uploadResume(){
+
+let file=document.getElementById("resume").files[0];
+
+if(!file){
+
+alert("Please select a resume.");
+
+return;
+
+}
+
+let output=document.getElementById("output");
+
+output.innerHTML="<div class='loading'>Analyzing Resume...</div>";
+
+let formData=new FormData();
+
+formData.append("resume",file);
+
+try{
+
+let response=await fetch(
+
+"http://127.0.0.1:5000/upload",
+
+{
+
+method:"POST",
+
+body:formData
+
+}
+
+);
+
+let data=await response.json();
+
+uploadedResumeText=data.resume_text;
+
+output.innerText=data.analysis;
+
+localStorage.setItem(
+
+"resume",
+
+uploadedResumeText
+
+);
+
+}
+
+catch(error){
+
+console.log(error);
+
+output.innerHTML="❌ Unable to connect to backend.";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>
